@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class NewPostPage extends StatefulWidget {
-  const NewPostPage({Key? key}) : super(key: key);
+class NewReportPage extends StatefulWidget {
+  const NewReportPage({Key? key}) : super(key: key);
 
   @override
-  State<NewPostPage> createState() => _NewPostPageState();
+  State<NewReportPage> createState() => _NewReportPageState();
 }
 
-class _NewPostPageState extends State<NewPostPage> {
+class _NewReportPageState extends State<NewReportPage> {
   String? _selectedValue;
 
   @override
@@ -16,7 +16,7 @@ class _NewPostPageState extends State<NewPostPage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         centerTitle: true,
-        title: const Text("New Post"),
+        title: const Text("New Report"),
         elevation: 5,
         shadowColor: Colors.black,
         titleTextStyle: const TextStyle(
@@ -64,18 +64,12 @@ class _NewPostPageState extends State<NewPostPage> {
 }
 
 Widget _buildHeader() {
-  return Row(
-    children: [
-      CircleAvatar(
-        radius: 25,
-        backgroundImage: AssetImage('assets/image/roomTest.jpg'),
-      ),
-      const SizedBox(width: 10),
-      Text(
-        'Nattanicha',
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-      ),
-    ],
+  return Container(
+    padding: EdgeInsets.all(10),
+    child: Text(
+      'Room 101',
+      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+    ),
   );
 }
 
@@ -87,7 +81,7 @@ Widget _buildDetail() {
         border: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.black),
         ),
-        hintText: 'Your Post...',
+        hintText: 'Write a detail...',
       ),
       maxLines: 5,
     ),
@@ -109,7 +103,7 @@ Widget _buildAddImage() {
           ),
           ElevatedButton(
             onPressed: () {},
-            child: Text('POST'),
+            child: Text('DONE'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,
               foregroundColor: Colors.white,
@@ -137,8 +131,8 @@ class DropdownWidget extends StatelessWidget {
       padding: EdgeInsets.all(10),
       value: selectedValue,
       onChanged: onChanged,
-      hint: Text('Post to'),
-      items: <String>['Public', 'My Apartment', 'Anouncement']
+      hint: Text('Topic'),
+      items: <String>['Electricity', 'Water', 'Internet', 'Room', 'Other']
           .map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,

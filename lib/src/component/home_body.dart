@@ -1,3 +1,6 @@
+import 'package:dorm_app/src/pages/announcement.dart';
+import 'package:dorm_app/src/pages/new_report.dart';
+import 'package:dorm_app/src/pages/report.dart';
 import 'package:flutter/material.dart';
 
 class HomeBody extends StatefulWidget {
@@ -42,11 +45,11 @@ class _HomeBodyState extends State<HomeBody> {
           child: Row(
             children: [
               SizedBox(width: 20),
-              _buildMenu(Icons.newspaper, "Announce"),
+              _buildMenu(Icons.newspaper, "Announce", AnnouncementPage()),
               SizedBox(width: 20),
-              _buildMenu(Icons.announcement, "Report"),
-              SizedBox(width: 20), // เพิ่มช่องว่างระหว่าง container
-              _buildMenu(Icons.analytics, "Dashboard"),
+              _buildMenu(Icons.announcement, "Report", ReportPage()),
+              SizedBox(width: 20),
+              _buildMenu(Icons.analytics, "Dashboard", NewReportPage()),
             ],
           ),
         )
@@ -114,21 +117,27 @@ class _HomeBodyState extends State<HomeBody> {
     );
   }
 
-  Widget _buildMenu(IconData icon, String label) {
-    return Column(
-      children: [
-        Container(
-          margin: EdgeInsets.only(bottom: 5),
-          width: 70,
-          height: 70,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Color(0xFFFDCD34),
+  Widget _buildMenu(IconData icon, String label, Widget page) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => page));
+      },
+      child: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.only(bottom: 5),
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Color(0xFFFDCD34),
+            ),
+            child: Icon(icon, size: 35),
           ),
-          child: Icon(icon, size: 35),
-        ),
-        Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
-      ],
+          Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
+        ],
+      ),
     );
   }
 }

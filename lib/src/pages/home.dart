@@ -1,4 +1,5 @@
 import 'package:dorm_app/src/component/home_body.dart';
+import 'package:dorm_app/src/pages/management.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -12,7 +13,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: Column(
         children: [
-          HomeBody(),
+          Management(),
         ],
       ),
     );
