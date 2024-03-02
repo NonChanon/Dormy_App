@@ -1,4 +1,5 @@
 import 'package:dorm_app/src/pages/new_post.dart';
+import 'package:dorm_app/src/pages/post.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -180,12 +181,40 @@ class _CommunityBodyState extends State<CommunityBody>
   }
 
   Widget buildCommentRow() {
-    return Container(
-      margin: EdgeInsets.only(right: 20, bottom: 10, top: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [Text("2 comments")],
-      ),
+    return Column(
+      children: [
+        Container(
+          margin: EdgeInsets.only(right: 20, bottom: 10, top: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [Text("2 comments")],
+          ),
+        ),
+        InkWell(
+          onTap: () {
+            Get.to(Post());
+          },
+          child: Container(
+            decoration: BoxDecoration(
+                border: Border(
+                    top: BorderSide(width: 0, color: Color(0xFFE5E5E5)))),
+            padding: EdgeInsets.only(bottom: 10, top: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.comment_outlined),
+                SizedBox(
+                  width: 5,
+                ),
+                Text(
+                  "Comment",
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                )
+              ],
+            ),
+          ),
+        )
+      ],
     );
   }
 

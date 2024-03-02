@@ -1,5 +1,6 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/%E0%B8%B5%E0%B8%B5utils/authController.dart';
+import 'package:dorm_app/src/pages/edit_profile.dart';
 import 'package:dorm_app/src/pages/user/Invoice.dart';
 import 'package:dorm_app/src/pages/community.dart';
 import 'package:dorm_app/src/pages/home.dart';
@@ -143,6 +144,7 @@ class _HomePageState extends State<HomePage> {
 
   Drawer buildDrawer() {
     return Drawer(
+      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
             topRight: Radius.circular(20), bottomRight: Radius.circular(20)),
@@ -165,7 +167,7 @@ class _HomePageState extends State<HomePage> {
                   TextStyle(color: Colors.black, fontWeight: FontWeight.w400),
             ),
             currentAccountPicture: CircleAvatar(
-              backgroundImage: AssetImage('assets/image/profile_picture.jpg'),
+              backgroundImage: AssetImage('assets/image/profile_test.jpg'),
             ),
           ),
           ListTile(
@@ -173,6 +175,7 @@ class _HomePageState extends State<HomePage> {
             title: Text('Edit Profile',
                 style: TextStyle(fontWeight: FontWeight.w500)),
             onTap: () {
+              Get.to(EditProfile());
               // Do something when Edit Profile is tapped
             },
           ),

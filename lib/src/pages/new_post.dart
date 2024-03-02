@@ -30,18 +30,17 @@ class _NewPostPageState extends State<NewPostPage> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          margin: const EdgeInsets.only(top: 10, left: 10, right: 10),
           decoration: BoxDecoration(
             color: Colors.white,
             boxShadow: const [
               BoxShadow(
                 color: Color(0xFFb7b7b7),
                 blurRadius: 2.0,
-                offset: Offset(0, 5),
+                offset: Offset(0, 2),
               ),
             ],
           ),
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
