@@ -13,6 +13,7 @@ class _NewReportPageState extends State<NewReportPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         centerTitle: true,
@@ -67,7 +68,7 @@ Widget _buildHeader() {
   return Container(
     padding: EdgeInsets.all(10),
     child: Text(
-      'Room 101',
+      'Room 204',
       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
     ),
   );

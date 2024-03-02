@@ -1,7 +1,10 @@
+import 'package:dorm_app/%E0%B8%B5%E0%B8%B5utils/authController.dart';
 import 'package:dorm_app/src/pages/announcement.dart';
-import 'package:dorm_app/src/pages/new_report.dart';
+import 'package:dorm_app/src/pages/admin/meter.dart';
 import 'package:dorm_app/src/pages/report.dart';
+import 'package:dorm_app/src/pages/admin/room_detail.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class HomeBody extends StatefulWidget {
   const HomeBody({Key? key});
@@ -11,8 +14,10 @@ class HomeBody extends StatefulWidget {
 }
 
 class _HomeBodyState extends State<HomeBody> {
+  final AuthController _authController = Get.put(AuthController());
   @override
   Widget build(BuildContext context) {
+    final UserRole userRole = _authController.getCurrentUserRole();
     return Column(
       children: [
         Container(
@@ -42,14 +47,23 @@ class _HomeBodyState extends State<HomeBody> {
           height: 20,
         ),
         Container(
+          margin: EdgeInsets.only(left: 20, right: 20),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SizedBox(width: 20),
               _buildMenu(Icons.newspaper, "Announce", AnnouncementPage()),
-              SizedBox(width: 20),
+              SizedBox(
+                width: 20,
+              ),
               _buildMenu(Icons.announcement, "Report", ReportPage()),
-              SizedBox(width: 20),
-              _buildMenu(Icons.analytics, "Dashboard", NewReportPage()),
+              SizedBox(
+                width: 20,
+              ),
+              if (userRole == UserRole.admin) // ถ้า userRole เป็น 'admin'
+                _buildMenu(Icons.electric_meter, "Meter", Meter()),
+              if (userRole == UserRole.admin) // ถ้า userRole เป็น 'admin'
+                SizedBox(width: 20), // ใส่ SizedBox ใน if condition
+              _buildMenu(Icons.analytics, "Dashboard", RoomDetailPage()),
             ],
           ),
         )
@@ -127,8 +141,8 @@ class _HomeBodyState extends State<HomeBody> {
         children: [
           Container(
             margin: EdgeInsets.only(bottom: 5),
-            width: 70,
-            height: 70,
+            width: 75,
+            height: 75,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               color: Color(0xFFFDCD34),

@@ -80,7 +80,7 @@ class _MyApartmentBodyState extends State<MyApartmentBody> {
                 SizedBox(height: 5),
                 Text(
                   value,
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               ],
             ),

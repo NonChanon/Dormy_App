@@ -1,4 +1,6 @@
+import 'package:dorm_app/%E0%B8%B5%E0%B8%B5utils/authController.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class NewPostPage extends StatefulWidget {
   const NewPostPage({Key? key}) : super(key: key);
@@ -13,6 +15,7 @@ class _NewPostPageState extends State<NewPostPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         centerTitle: true,
@@ -133,13 +136,21 @@ class DropdownWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AuthController _authController = Get.put(AuthController());
+    List<String> dropDownItems = [];
+    final UserRole userRole = _authController.getCurrentUserRole();
+    if (userRole == UserRole.admin) {
+      dropDownItems = ['Public', 'My Apartment', 'Anouncement'];
+    } else {
+      dropDownItems = ['Public', 'My Apartment'];
+    }
+
     return DropdownButton<String>(
       padding: EdgeInsets.all(10),
       value: selectedValue,
       onChanged: onChanged,
       hint: Text('Post to'),
-      items: <String>['Public', 'My Apartment', 'Anouncement']
-          .map<DropdownMenuItem<String>>((String value) {
+      items: dropDownItems.map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
           child: Text(value),

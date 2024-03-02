@@ -1,4 +1,6 @@
+import 'package:dorm_app/src/pages/invoice_detail.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class InvoiceBody extends StatefulWidget {
   const InvoiceBody({super.key});
@@ -82,56 +84,62 @@ class _InvoiceBodyState extends State<InvoiceBody>
       child: Row(
         children: [
           Expanded(
-            child: Container(
-              padding:
-                  EdgeInsets.only(right: 10, left: 20, top: 15, bottom: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Rental Invoice Febuary/2024",
-                    style: TextStyle(fontWeight: FontWeight.w500),
-                  ),
-                  Container(
-                    child: Row(
-                      children: [
-                        Row(children: [
-                          isPaid
-                              ? Icon(
-                                  Icons.check_circle_outline,
-                                  size: 20,
-                                  color: Colors.green,
-                                )
-                              : Icon(
-                                  Icons.pending_actions_outlined,
-                                  size: 20,
-                                  color: Color(0xFFF4A64A),
-                                ),
-                          SizedBox(
-                            width: 2,
-                          ),
-                          isPaid
-                              ? Text(
-                                  "Paid",
-                                  style: TextStyle(
-                                      color: Colors.green,
-                                      fontWeight: FontWeight.bold),
-                                )
-                              : Text(
-                                  "Unpaid",
-                                  style: TextStyle(
-                                      color: Color(0xFFF4A64A),
-                                      fontWeight: FontWeight.bold),
-                                ),
-                        ]),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Icon(Icons.keyboard_arrow_right_outlined)
-                      ],
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => InvoiceDetail()));
+              },
+              child: Container(
+                padding:
+                    EdgeInsets.only(right: 10, left: 20, top: 15, bottom: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Rental Invoice Febuary/2024",
+                      style: TextStyle(fontWeight: FontWeight.w500),
                     ),
-                  )
-                ],
+                    Container(
+                      child: Row(
+                        children: [
+                          Row(children: [
+                            isPaid
+                                ? Icon(
+                                    Icons.check_circle_outline,
+                                    size: 20,
+                                    color: Colors.green,
+                                  )
+                                : Icon(
+                                    Icons.pending_actions_outlined,
+                                    size: 20,
+                                    color: Color(0xFFF4A64A),
+                                  ),
+                            SizedBox(
+                              width: 2,
+                            ),
+                            isPaid
+                                ? Text(
+                                    "Paid",
+                                    style: TextStyle(
+                                        color: Colors.green,
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                : Text(
+                                    "Unpaid",
+                                    style: TextStyle(
+                                        color: Color(0xFFF4A64A),
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                          ]),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Icon(Icons.keyboard_arrow_right_outlined)
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),

@@ -1,4 +1,4 @@
-import 'package:dorm_app/src/pages/new_report.dart';
+import 'package:dorm_app/src/pages/user/new_report.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
