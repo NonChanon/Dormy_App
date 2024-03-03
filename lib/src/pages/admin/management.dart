@@ -1,8 +1,10 @@
+import 'package:dorm_app/src/pages/admin/build_room_detail.dart';
 import 'package:dorm_app/src/pages/announcement.dart';
 import 'package:dorm_app/src/pages/user/new_report.dart';
 import 'package:dorm_app/src/pages/report.dart';
 import 'package:dorm_app/src/pages/admin/room_detail.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class Management extends StatefulWidget {
   const Management({Key? key});
@@ -122,87 +124,98 @@ class _ManagementState extends State<Management> {
         ),
         Align(
           alignment: Alignment.topCenter,
-          child: Container(
-            height: 60,
-            margin: EdgeInsets.only(left: 40, right: 40, top: 25),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              color: Color(0xFFFDCD34),
-            ),
-            alignment: Alignment.center,
-            child: Container(
-              padding: EdgeInsets.only(top: 5, bottom: 5, left: 20, right: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.only(right: 10),
-                      margin: EdgeInsets.only(right: 10),
-                      decoration: BoxDecoration(
-                        border: Border(
-                            right: BorderSide(width: 1, color: Colors.black)),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.apartment, size: 26),
-                          SizedBox(width: 5),
-                          Expanded(
-                            child: Text(
-                              'Happy Apartmentssss',
-                              textAlign: TextAlign.center,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+          child: InkWell(
+              onTap: () {
+                _showAlertDialog(context);
+              },
+              child: Container(
+                height: 60,
+                margin: EdgeInsets.only(left: 40, right: 40, top: 25),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  color: Color(0xFFFDCD34),
+                ),
+                alignment: Alignment.center,
+                child: Container(
+                  padding:
+                      EdgeInsets.only(top: 5, bottom: 5, left: 20, right: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.only(right: 10),
+                          margin: EdgeInsets.only(right: 10),
+                          decoration: BoxDecoration(
+                            border: Border(
+                                right:
+                                    BorderSide(width: 1, color: Colors.black)),
                           ),
-                        ],
+                          child: Row(
+                            children: [
+                              Icon(Icons.apartment, size: 26),
+                              SizedBox(width: 5),
+                              Expanded(
+                                child: Text(
+                                  'Happy Apartmentssss',
+                                  textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
+                      Container(
+                        width: 100,
+                        child: Text(
+                          'Building Happy',
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
+                    ],
                   ),
-                  Container(
-                    width: 100,
-                    child: Text(
-                      'Building Happy',
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                ),
+              )),
+        ),
+        Align(
+          alignment: Alignment.center,
+          child: InkWell(
+            onTap: () {
+              _showAlertDialog(context);
+            },
+            child: Container(
+              height: 40,
+              width: 120,
+              margin: EdgeInsets.only(left: 40, right: 40, top: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                color: Color(0xFFFDCD34),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Icon(Icons.location_on_outlined, size: 26),
+                  Text(
+                    '1st Floor',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
                   )
                 ],
               ),
-            ),
-          ),
-        ),
-        Align(
-          alignment: Alignment.center,
-          child: Container(
-            height: 40,
-            width: 120,
-            margin: EdgeInsets.only(left: 40, right: 40, top: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              color: Color(0xFFFDCD34),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Icon(Icons.location_on_outlined, size: 26),
-                Text(
-                  '1st Floor',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                )
-              ],
             ),
           ),
         ),
@@ -368,4 +381,110 @@ class _ManagementState extends State<Management> {
       ),
     );
   }
+
+  void _showAlertDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.circular(10.0), // ปรับความโค้งของขอบตามต้องการ
+          ),
+          backgroundColor: Colors.white,
+          title: Container(
+            child: Text('Select Details',
+                style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          content: buildApartmentDetails(),
+          actions: <Widget>[
+            InkWell(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: Container(
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Center(
+                  child: Text(
+                    'OK',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
+}
+
+Widget buildApartmentDetails() {
+  return Container(
+    width: 300,
+    height: 260,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(5),
+    ),
+    child: Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+              child: Column(
+            children: [
+              buildInputForm("Dormitory's name", "Name", ['a', 'b', 'c']),
+              SizedBox(
+                height: 10,
+              ),
+              buildInputForm("Building's name", "Name", ['a', 'b', 'c']),
+              SizedBox(
+                height: 10,
+              ),
+              buildInputForm("Floor", "Number", ['1', '2', '3']),
+            ],
+          )),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget buildInputForm(String label, String placeholder, List<String> options) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(label),
+      SizedBox(
+        height: 5,
+      ),
+      DropdownButtonFormField(
+        decoration: InputDecoration(
+          hintText: placeholder,
+          border: OutlineInputBorder(),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.black),
+          ),
+          contentPadding:
+              EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+        ),
+        items: options.map((String option) {
+          return DropdownMenuItem(
+            value: option,
+            child: Text(option),
+          );
+        }).toList(),
+        onChanged: (String? value) {
+          // เพิ่มโค้ดที่คุณต้องการให้ทำงานเมื่อมีการเลือกตัวเลือกใน Dropdown ที่นี่
+        },
+      ),
+    ],
+  );
 }
