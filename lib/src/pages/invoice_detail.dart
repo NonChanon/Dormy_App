@@ -1,3 +1,4 @@
+import 'package:dorm_app/src/pages/qrPayment.dart';
 import 'package:flutter/material.dart';
 
 class InvoiceDetail extends StatefulWidget {
@@ -182,7 +183,16 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   Widget buildPaymentButton(bool isPaid) {
     if (!isPaid) {
       return InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => QRPayment(
+                qrContent: "YOUR_QR_CONTENT_HERE",
+              ),
+            ),
+          );
+        },
         child: Container(
           margin: EdgeInsets.all(20),
           height: 50,

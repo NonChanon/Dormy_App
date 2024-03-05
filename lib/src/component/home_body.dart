@@ -1,6 +1,7 @@
 import 'package:dorm_app/%E0%B8%B5%E0%B8%B5utils/authController.dart';
 import 'package:dorm_app/src/pages/announcement.dart';
 import 'package:dorm_app/src/pages/admin/meter.dart';
+import 'package:dorm_app/src/pages/dashboard.dart';
 import 'package:dorm_app/src/pages/report.dart';
 import 'package:dorm_app/src/pages/admin/room_detail.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +64,7 @@ class _HomeBodyState extends State<HomeBody> {
                 _buildMenu(Icons.electric_meter, "Meter", Meter()),
               if (userRole == UserRole.admin) // ถ้า userRole เป็น 'admin'
                 SizedBox(width: 20), // ใส่ SizedBox ใน if condition
-              _buildMenu(Icons.analytics, "Dashboard", RoomDetailPage()),
+              _buildMenu(Icons.analytics, "Dashboard", Dashboard()),
             ],
           ),
         )

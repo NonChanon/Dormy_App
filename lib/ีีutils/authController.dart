@@ -21,6 +21,6 @@ class AuthController extends GetxController {
   UserRole getCurrentUserRole() {
     // ใส่โค้ดที่นี่เพื่อดึงข้อมูลสิทธิ์ของผู้ใช้งาน
     // เช่น การตรวจสอบในฐานข้อมูลหรือบนเซิร์ฟเวอร์
-    return UserRole.admin; // ตัวอย่างเท่านี้คือการสมมติเท่านั้น
+    return UserRole.user; // ตัวอย่างเท่านี้คือการสมมติเท่านั้น
   }
 }
