@@ -4,3 +4,4 @@ class IndividualBar {
 
   IndividualBar({required this.x, required this.y});
 }
+
