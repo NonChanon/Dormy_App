@@ -1,7 +1,11 @@
+import 'dart:convert';
+
+import 'package:dorm_app/%E0%B8%B5%E0%B8%B5utils/authController.dart';
 import 'package:dorm_app/src/pages/home_page.dart';
 import 'package:dorm_app/src/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 
 class JoinDormitory extends StatefulWidget {
   const JoinDormitory({Key? key}) : super(key: key);
@@ -11,6 +15,65 @@ class JoinDormitory extends StatefulWidget {
 }
 
 class _JoinDormitoryState extends State<JoinDormitory> {
+
+  final AuthController _authController = Get.put(AuthController());
+  final _codeController = TextEditingController();
+
+  void joinDormitory() async {
+    final id = _authController.getIduser();
+    final reqBody = {
+      "idUser" : id,
+      "codeRoom" : _codeController.text,
+    };
+    
+    final response = await http.put(Uri.parse('http://10.98.0.51:8081/Api/User/UpdateIdRoom'),headers: {"Content-Type":"application/json"},body : jsonEncode(reqBody));
+    final jsonRes = jsonDecode(response.body);
+
+    if(response.statusCode >= 200 && response.statusCode < 300){
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Join Room'),
+            content: Text("Successful"),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  
+                  Get.offAll(HomePage());
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      await http.post(Uri.parse('http://10.98.0.51:8081/Api/Notify/CreateNotifyJoinDorm/$id'));
+      
+    }
+    else
+    {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Join Room Fail'),
+            content: Text("Please try agin."),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,7 +143,7 @@ class _JoinDormitoryState extends State<JoinDormitory> {
             ),
             InkWell(
               onTap: () {
-                Get.off(HomePage());
+                joinDormitory();
               },
               child: Container(
                 margin: EdgeInsets.only(left: 20, right: 20),
@@ -113,6 +176,7 @@ class _JoinDormitoryState extends State<JoinDormitory> {
           height: 5,
         ),
         TextField(
+          controller : _codeController,
           decoration: InputDecoration(
             hintText: placeholder,
             border: OutlineInputBorder(),

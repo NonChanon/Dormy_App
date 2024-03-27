@@ -116,6 +116,7 @@ class _ManagementState extends State<Management> {
   }
 
   Widget _buildPageItem(int index) {
+
     return Stack(
       children: [
         Container(
@@ -157,7 +158,7 @@ class _ManagementState extends State<Management> {
                               SizedBox(width: 5),
                               Expanded(
                                 child: Text(
-                                  'Happy Apartmentssss',
+                                  'AP HOUSE',
                                   textAlign: TextAlign.center,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -174,7 +175,7 @@ class _ManagementState extends State<Management> {
                       Container(
                         width: 100,
                         child: Text(
-                          'Building Happy',
+                          'Building A',
                           textAlign: TextAlign.center,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -189,36 +190,36 @@ class _ManagementState extends State<Management> {
                 ),
               )),
         ),
-        Align(
-          alignment: Alignment.center,
-          child: InkWell(
-            onTap: () {
-              _showAlertDialog(context);
-            },
-            child: Container(
-              height: 40,
-              width: 120,
-              margin: EdgeInsets.only(left: 40, right: 40, top: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: Color(0xFFFDCD34),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Icon(Icons.location_on_outlined, size: 26),
-                  Text(
-                    '1st Floor',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ),
+        // Align(
+        //   alignment: Alignment.center,
+        //   child: InkWell(
+        //     onTap: () {
+        //       _showAlertDialog(context);
+        //     },
+        //     child: Container(
+        //       height: 40,
+        //       width: 120,
+        //       margin: EdgeInsets.only(left: 40, right: 40, top: 10),
+        //       decoration: BoxDecoration(
+        //         borderRadius: BorderRadius.circular(5),
+        //         color: Color(0xFFFDCD34),
+        //       ),
+        //       child: Row(
+        //         mainAxisAlignment: MainAxisAlignment.center,
+        //         children: [
+        //           // Icon(Icons.location_on_outlined, size: 26),
+        //           Text(
+        //             '1st Floor',
+        //             style: TextStyle(
+        //               fontSize: 16,
+        //               fontWeight: FontWeight.bold,
+        //             ),
+        //           )
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        // ),
         Positioned(
           bottom: 25,
           left: 40,
@@ -281,12 +282,22 @@ class _ManagementState extends State<Management> {
   }
 
   Widget _buildMenu() {
+    final data = [
+      {"roomName": "101", "statusText": "Paid", "isStay": true},
+      {"roomName": "102", "statusText": "Unpaid", "isStay": false},
+      {"roomName": "103", "statusText": "Unpaid", "isStay": false},
+      {"roomName": "104", "statusText": "Unpaid", "isStay": false},
+      {"roomName": "201", "statusText": "Unpaid", "isStay": false},
+      {"roomName": "202", "statusText": "Unpaid", "isStay": false},
+      {"roomName": "203", "statusText": "Unpaid", "isStay": false},
+      {"roomName": "204", "statusText": "Unpaid", "isStay": false},
+    ];
     return SingleChildScrollView(
       child: Wrap(
         spacing: 20,
         runSpacing: 20,
         children: List.generate(
-          100,
+          8,
           (index) => SizedBox(
             width: 110,
             child: GestureDetector(
@@ -305,13 +316,13 @@ class _ManagementState extends State<Management> {
                       offset: Offset(0, 1), // changes position of shadow
                     ),
                   ],
-                  color: Color(0xFFFDCD34),
+                  color: data[index]['isStay'].toString() == "false" ? Colors.grey : Color(0xFFFDCD34),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '101',
+                      data[index]['roomName'].toString(),
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
                     ),
@@ -343,17 +354,17 @@ class _ManagementState extends State<Management> {
                                 //       fontSize: 16),
                                 // )
                                 Icon(
-                                  _getStatusIcon('Paid'),
+                                  _getStatusIcon(data[index]['statusText'].toString()),
                                   size: 24,
-                                  color: _getStatusColor('Paid'),
+                                  color: _getStatusColor(data[index]['statusText'].toString()),
                                 ),
                                 SizedBox(
                                   width: 5,
                                 ),
                                 Text(
-                                  _getStatusText('Paid'),
+                                  _getStatusText(data[index]['statusText'].toString()),
                                   style: TextStyle(
-                                      color: _getStatusColor('Paid'),
+                                      color: _getStatusColor(data[index]['statusText'].toString()),
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16),
                                 )
@@ -440,15 +451,15 @@ Widget buildApartmentDetails() {
           Container(
               child: Column(
             children: [
-              buildInputForm("Dormitory's name", "Name", ['a', 'b', 'c']),
+              buildInputForm("Dormitory's name", "Name", ['AP HOUSE']),
               SizedBox(
                 height: 10,
               ),
-              buildInputForm("Building's name", "Name", ['a', 'b', 'c']),
-              SizedBox(
-                height: 10,
-              ),
-              buildInputForm("Floor", "Number", ['1', '2', '3']),
+              buildInputForm("Building's name", "Name", ['A']),
+              // SizedBox(
+              //   height: 10,
+              // ),
+              // buildInputForm("Floor", "Number", ['1', '2', '3']),
             ],
           )),
         ],

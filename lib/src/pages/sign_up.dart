@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'package:dorm_app/src/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -18,6 +20,64 @@ class _SignUpState extends State<SignUp> {
   final _passwordController = TextEditingController();
   final _confirmPwdController = TextEditingController();
   bool passToggle = true;
+
+  void register() async {
+    final reqBody = {
+      "name" : _firstnameController.text,
+      "lastname" : _lastnameController.text,
+      "email" : _emailController.text,
+      "password" : _passwordController.text,
+      "confirmPassword" : _confirmPwdController.text,
+      "phonenumber" : _phoneNumController.text,
+      "role" : "renter"
+    };
+
+    final response = await http.post(Uri.parse('http://10.98.0.51:8081/Api/User/Register'),headers: {"Content-Type":"application/json"},body : jsonEncode(reqBody));
+
+    final jsonRes = jsonDecode(response.body);
+    print("statusCode : " + response.statusCode.toString());
+    if(response.statusCode >= 200 && response.statusCode < 300){
+      print(jsonDecode(response.body));
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Register'),
+            content: Text("The email address you entered is already registered. Please try again with a different email address."),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      Navigator.pushReplacementNamed(context, '/sign_in');
+    }
+    else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Register Failed'),
+            content: Text(jsonRes['message']),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+    
+  } 
 
   @override
   Widget build(BuildContext context) {
@@ -210,9 +270,7 @@ class _SignUpState extends State<SignUp> {
       InkWell(
         onTap: () {
           if (_formfield.currentState!.validate()) {
-            print('register success');
-            _emailController.clear();
-            _passwordController.clear();
+            register();
           }
         },
         child: Container(

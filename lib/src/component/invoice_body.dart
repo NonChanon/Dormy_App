@@ -1,6 +1,10 @@
+import 'dart:convert';
+
+import 'package:dorm_app/%E0%B8%B5%E0%B8%B5utils/authController.dart';
 import 'package:dorm_app/src/pages/invoice_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 
 class InvoiceBody extends StatefulWidget {
   const InvoiceBody({super.key});
@@ -12,11 +16,33 @@ class InvoiceBody extends StatefulWidget {
 class _InvoiceBodyState extends State<InvoiceBody>
     with TickerProviderStateMixin {
   late TabController _tabController;
+  final AuthController _authController = Get.put(AuthController());
+  final invoicePaid = <Invoice>[].obs;
+  final invoiceUnpaid = <Invoice>[].obs;
+  final months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    fetchGetInvoice();
+  }
+
+  fetchGetInvoice() async {
+    final idRoom = _authController.getIdRoom();
+    var response = await http.get(Uri.parse("http://10.98.0.51:8081/Api/Invoice/GetInvoicesHistory/$idRoom"));
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+      for (var data in jsonResponse) {
+        if(data["status"]) invoicePaid.add(Invoice.fromJson((data)));
+        else invoiceUnpaid.add(Invoice.fromJson((data)));
+      }
+      print("invoicePaid : " + invoicePaid.length.toString());
+      print("invoiceUnpaid : " + invoiceUnpaid.length.toString());
+      setState(() {});
+    } else {
+      print('Request failed with status: ${response.statusCode}.');
+    }
   }
 
   @override
@@ -29,8 +55,8 @@ class _InvoiceBodyState extends State<InvoiceBody>
             child: TabBarView(
               controller: _tabController,
               children: [
-                buildInvoiceListView(isPaid: false),
-                buildInvoiceListView(isPaid: true),
+                buildInvoiceListView(length : invoiceUnpaid.length,type : "Unpaid"),
+                buildInvoiceListView(length : invoicePaid.length,type : "Paid"),
               ],
             ),
           ),
@@ -57,18 +83,20 @@ class _InvoiceBodyState extends State<InvoiceBody>
     );
   }
 
-  Widget buildInvoiceListView({required bool isPaid}) {
+  Widget buildInvoiceListView({required int length,required String type}) {
+
     return ListView.builder(
       physics: AlwaysScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemCount: 10,
+      itemCount: length,
       itemBuilder: (context, index) {
-        return buildInvoiceContainer(isPaid: isPaid);
+        return buildInvoiceContainer(invoice : type == "Unpaid" ? invoiceUnpaid[index] : invoicePaid[index]);
       },
     );
   }
 
-  Widget buildInvoiceContainer({required bool isPaid}) {
+  Widget buildInvoiceContainer({required Invoice invoice}) {
+    
     return Container(
       margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
       decoration: BoxDecoration(
@@ -87,7 +115,7 @@ class _InvoiceBodyState extends State<InvoiceBody>
             child: GestureDetector(
               onTap: () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => InvoiceDetail()));
+                    MaterialPageRoute(builder: (context) => InvoiceDetail(invoice : invoice)));
               },
               child: Container(
                 padding:
@@ -96,14 +124,14 @@ class _InvoiceBodyState extends State<InvoiceBody>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Rental Invoice Febuary/2024",
+                      "Rental Invoice "+ months[invoice.timesTamp.month] +" / "+invoice.timesTamp.year.toString(),
                       style: TextStyle(fontWeight: FontWeight.w500),
                     ),
                     Container(
                       child: Row(
                         children: [
                           Row(children: [
-                            isPaid
+                            invoice.status
                                 ? Icon(
                                     Icons.check_circle_outline,
                                     size: 20,
@@ -117,7 +145,7 @@ class _InvoiceBodyState extends State<InvoiceBody>
                             SizedBox(
                               width: 2,
                             ),
-                            isPaid
+                            invoice.status
                                 ? Text(
                                     "Paid",
                                     style: TextStyle(
@@ -145,6 +173,68 @@ class _InvoiceBodyState extends State<InvoiceBody>
           ),
         ],
       ),
+    );
+  }
+}
+
+class Invoice {
+  final String idInvoice;
+  final String idRoom;
+  final String roomName;
+  final int roomPrice;
+  final int electricityPrice;
+  final int waterPrice;
+  final int electricityUnit;
+  final int waterUnit;
+  final int furniturePrice;
+  final int internetPrice;
+  final int parkingPrice;
+  final int other;
+  final int total;
+  final bool status;
+  final bool statusShow;
+  final DateTime dueDate;
+  final DateTime timesTamp;
+
+  Invoice({
+    required this.idInvoice,
+    required this.idRoom,
+    required this.roomName,
+    required this.roomPrice,
+    required this.electricityPrice,
+    required this.waterPrice,
+    required this.electricityUnit,
+    required this.waterUnit,
+    required this.furniturePrice,
+    required this.internetPrice,
+    required this.parkingPrice,
+    required this.other,
+    required this.total,
+    required this.status,
+    required this.statusShow,
+    required this.dueDate,
+    required this.timesTamp,
+  });
+
+  factory Invoice.fromJson(Map<String, dynamic> json) {
+    return Invoice(
+      idInvoice: json['idInvoice'] ?? '',
+      idRoom: json['idRoom'] ?? '',
+      roomName: json['roomName'].toString() ?? '',
+      roomPrice: json['roomPrice'] ?? 0,
+      electricityPrice: json['electricityPrice'] ?? 0,
+      waterPrice: json['waterPrice'] ?? 0,
+      electricityUnit: json['electricityUnit'] ?? 0,
+      waterUnit: json['waterUnit'] ?? 0,
+      furniturePrice: json['furniturePrice'] ?? 0,
+      internetPrice: json['internetPrice'] ?? 0,
+      parkingPrice: json['parkingPrice'] ?? 0,
+      other: json['other'] ?? 0,
+      total: json['total'] ?? 0,
+      status: json['status'] ?? false,
+      statusShow: json['statusShow'] ?? false,
+      dueDate: DateTime.parse(json['dueDate']),
+      timesTamp: DateTime.parse(json['timesTamp']),
     );
   }
 }

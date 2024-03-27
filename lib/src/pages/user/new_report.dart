@@ -1,4 +1,9 @@
+import 'dart:convert';
+import 'package:dorm_app/src/pages/report.dart';
+import 'package:http/http.dart' as http;
+import 'package:dorm_app/%E0%B8%B5%E0%B8%B5utils/authController.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class NewReportPage extends StatefulWidget {
   const NewReportPage({Key? key}) : super(key: key);
@@ -8,7 +13,50 @@ class NewReportPage extends StatefulWidget {
 }
 
 class _NewReportPageState extends State<NewReportPage> {
+
+  final AuthController _authController = Get.put(AuthController());
   String? _selectedValue;
+  final _detailsController = TextEditingController();
+  final _categoryController = TextEditingController();
+
+  void sendReport() async {
+    final id = _authController.getIduser();
+    final reqBody = {
+      "idUser" : id,
+      "details" : _detailsController.text,
+      "category" : _categoryController.text,
+      "title" : "text"
+    };
+    final reqBodyNoitfy = {
+      "idUser" : id,
+      "details" : _detailsController.text,
+      "title" : _categoryController.text
+    };
+    await http.post(Uri.parse('http://10.98.0.51:8081/Api/Notify/CreateNotifyReport'),headers: {"Content-Type":"application/json"},body : jsonEncode(reqBodyNoitfy));
+    final response = await http.post(Uri.parse('http://10.98.0.51:8081/Api/Problem/CreateProblem'),headers: {"Content-Type":"application/json"},body : jsonEncode(reqBody));
+    if(response.statusCode >= 200 && response.statusCode < 300){
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Report'),
+            content: Text("Successful"),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  Get.to(ReportPage()); 
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,17 +90,18 @@ class _NewReportPageState extends State<NewReportPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(),
+              _buildHeader(_authController.getRoomName()),
               DropdownWidget(
                 selectedValue: _selectedValue,
                 onChanged: (String? value) {
                   setState(() {
                     _selectedValue = value;
+                    _categoryController.text = value ?? '';
                   });
                 },
               ),
               _buildDetail(),
-              _buildAddImage(),
+              _buildAddReport(),
               // _buildAnonymousMode(),
               // _buildButtons(),
             ],
@@ -61,48 +110,49 @@ class _NewReportPageState extends State<NewReportPage> {
       ),
     );
   }
-}
 
-Widget _buildHeader() {
-  return Container(
-    padding: EdgeInsets.all(10),
-    child: Text(
-      'Room 204',
-      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-    ),
-  );
-}
-
-Widget _buildDetail() {
-  return Padding(
-    padding: const EdgeInsets.all(10),
-    child: TextField(
-      decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.black),
-        ),
-        hintText: 'Write a detail...',
+  Widget _buildHeader(String roomName) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      child: Text(
+        "Room " + roomName,
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
       ),
-      maxLines: 5,
-    ),
-  );
-}
+    );
+  }
 
-Widget _buildAddImage() {
-  return Container(
+  Widget _buildDetail() {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: TextField(
+        controller: _detailsController,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.black),
+          ),
+          hintText: 'Write a detail...',
+        ),
+        maxLines: 5,
+      ),
+    );
+  }
+
+  Widget _buildAddReport() {
+    return Container(
       padding: EdgeInsets.only(right: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-            icon: (Icon(
-              Icons.photo_camera,
-              size: 32,
-            )),
-            onPressed: () {},
-          ),
+          // IconButton(
+          //   icon: (Icon(
+          //     Icons.photo_camera,
+          //     size: 32,
+          //   )),
+          //   onPressed: () {},
+          // ),
+          Spacer(),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: sendReport,
             child: Text('DONE'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,
@@ -113,7 +163,9 @@ Widget _buildAddImage() {
             ),
           ),
         ],
-      ));
+      )
+    );
+  }
 }
 
 class DropdownWidget extends StatelessWidget {

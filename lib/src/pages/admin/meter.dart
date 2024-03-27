@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class Meter extends StatefulWidget {
@@ -68,10 +70,8 @@ class _MeterState extends State<Meter> with SingleTickerProviderStateMixin {
             child: TabBarView(
               controller: _tabController,
               children: [
-                // เนื้อหาของแท็บที่ 1
                 _tabBarBody(),
-                // เนื้อหาของแท็บที่ 2
-                Center(child: Text('Tab 2 content')),
+                _tabBarBody(),
               ],
             ),
           ),
@@ -116,7 +116,7 @@ class _MeterState extends State<Meter> with SingleTickerProviderStateMixin {
                           SizedBox(width: 5),
                           Expanded(
                             child: Text(
-                              'Happy Apartmentssss',
+                              'AP HOUSE',
                               textAlign: TextAlign.center,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -133,7 +133,7 @@ class _MeterState extends State<Meter> with SingleTickerProviderStateMixin {
                   Container(
                     width: 100,
                     child: Text(
-                      'Building Happy',
+                      'Building A',
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -148,31 +148,31 @@ class _MeterState extends State<Meter> with SingleTickerProviderStateMixin {
             ),
           ),
         ),
-        Align(
-          alignment: Alignment.center,
-          child: Container(
-            height: 40,
-            width: 120,
-            margin: EdgeInsets.only(left: 40, right: 40, top: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              color: Color(0xFFFDCD34),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Icon(Icons.location_on_outlined, size: 26),
-                Text(
-                  '1st Floor',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
+        // Align(
+        //   alignment: Alignment.center,
+        //   child: Container(
+        //     height: 40,
+        //     width: 120,
+        //     margin: EdgeInsets.only(left: 40, right: 40, top: 10),
+        //     decoration: BoxDecoration(
+        //       borderRadius: BorderRadius.circular(5),
+        //       color: Color(0xFFFDCD34),
+        //     ),
+        //     child: Row(
+        //       mainAxisAlignment: MainAxisAlignment.center,
+        //       children: [
+        //         // Icon(Icons.location_on_outlined, size: 26),
+        //         Text(
+        //           '1st Floor',
+        //           style: TextStyle(
+        //             fontSize: 16,
+        //             fontWeight: FontWeight.bold,
+        //           ),
+        //         )
+        //       ],
+        //     ),
+        //   ),
+        // ),
         Positioned(
           bottom: 25,
           left: 40,
@@ -257,6 +257,20 @@ class _MeterState extends State<Meter> with SingleTickerProviderStateMixin {
   }
 
   Widget _tabBarBody() {
+    final random = Random();
+    final data = [
+      {"roomName": "101"},
+      {"roomName": "102"},
+      {"roomName": "103"},
+      {"roomName": "104"},
+      {"roomName": "201"},
+      {"roomName": "202"},
+      {"roomName": "203"},
+      {"roomName": "204"},
+    ].map((item) => {
+      ...item,
+      "meter": random.nextInt(44) + 56, // 56 to 99
+    }).toList();
     return SingleChildScrollView(
         child: Table(
       border: TableBorder.symmetric(
@@ -310,171 +324,62 @@ class _MeterState extends State<Meter> with SingleTickerProviderStateMixin {
             ),
           ],
         ),
-        TableRow(
-          children: [
-            TableCell(
-              verticalAlignment: TableCellVerticalAlignment.middle,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                child: Center(
-                  child: Text('A101', style: TextStyle(fontSize: 16)),
+        ...data.map((item) {
+          return TableRow(
+            children: [
+              TableCell(
+                verticalAlignment: TableCellVerticalAlignment.middle,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                  child: Center(
+                    child: Text(item['roomName'].toString(), style: TextStyle(fontSize: 16)),
+                  ),
                 ),
               ),
-            ),
-            TableCell(
-              verticalAlignment: TableCellVerticalAlignment.middle,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Center(
-                  child: TextFormField(
-                    enabled: false,
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
+              TableCell(
+                verticalAlignment: TableCellVerticalAlignment.middle,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Center(
+                    child: TextFormField(
+                      initialValue : item['meter'].toString(),
+                      enabled: false,
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                        border: OutlineInputBorder(),
                       ),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
-                      border: OutlineInputBorder(),
                     ),
                   ),
                 ),
               ),
-            ),
-            TableCell(
-              verticalAlignment: TableCellVerticalAlignment.middle,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                child: Center(
-                  child: TextFormField(
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                      hintText: 'Meter number',
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black),
+              TableCell(
+                verticalAlignment: TableCellVerticalAlignment.middle,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                  child: Center(
+                    child: TextFormField(
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        hintText: 'Meter number',
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                        border: OutlineInputBorder(),
                       ),
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                      border: OutlineInputBorder(),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
+            ],
+          );
+        }).toList(),
       ],
     )
-        // child: DataTable(
-        //   columnSpacing: 100,
-        //   columns: const <DataColumn>[
-        //     DataColumn(
-        //       label: Text(
-        //         'Name',
-        //         style: TextStyle(),
-        //       ),
-        //     ),
-        //     DataColumn(
-        //       label: Text(
-        //         'Age',
-        //         style: TextStyle(),
-        //       ),
-        //     ),
-        //     DataColumn(
-        //       label: Text(
-        //         'Role',
-        //         style: TextStyle(),
-        //       ),
-        //     ),
-        //   ],
-        //   rows: const <DataRow>[
-        //     DataRow(
-        //       cells: <DataCell>[
-        //         DataCell(Text('Sarah')),
-        //         DataCell(Text('19')),
-        //         DataCell(Text('Student')),
-        //       ],
-        //     ),
-        //     DataRow(
-        //       cells: <DataCell>[
-        //         DataCell(Text('Janine')),
-        //         DataCell(Text('43')),
-        //         DataCell(Text('Professor')),
-        //       ],
-        //     ),
-        //     DataRow(
-        //       cells: <DataCell>[
-        //         DataCell(Text('William')),
-        //         DataCell(Text('27')),
-        //         DataCell(Text('Associate')),
-        //       ],
-        //     ),
-        //     DataRow(
-        //       cells: <DataCell>[
-        //         DataCell(Text('Sarah')),
-        //         DataCell(Text('19')),
-        //         DataCell(Text('Student')),
-        //       ],
-        //     ),
-        //     DataRow(
-        //       cells: <DataCell>[
-        //         DataCell(Text('Sarah')),
-        //         DataCell(Text('19')),
-        //         DataCell(Text('Student')),
-        //       ],
-        //     ),
-        //     DataRow(
-        //       cells: <DataCell>[
-        //         DataCell(Text('Sarah')),
-        //         DataCell(Text('19')),
-        //         DataCell(Text('Student')),
-        //       ],
-        //     ),
-        //     DataRow(
-        //       cells: <DataCell>[
-        //         DataCell(Text('Sarah')),
-        //         DataCell(Text('19')),
-        //         DataCell(Text('Student')),
-        //       ],
-        //     ),
-        //     DataRow(
-        //       cells: <DataCell>[
-        //         DataCell(Text('Sarah')),
-        //         DataCell(Text('19')),
-        //         DataCell(Text('Student')),
-        //       ],
-        //     ),
-        //     DataRow(
-        //       cells: <DataCell>[
-        //         DataCell(Text('Sarah')),
-        //         DataCell(Text('19')),
-        //         DataCell(Text('Student')),
-        //       ],
-        //     ),
-        //     DataRow(
-        //       cells: <DataCell>[
-        //         DataCell(Text('Sarah')),
-        //         DataCell(Text('19')),
-        //         DataCell(Text('Student')),
-        //       ],
-        //     ),
-        //     DataRow(
-        //       cells: <DataCell>[
-        //         DataCell(Text('Sarah')),
-        //         DataCell(Text('19')),
-        //         DataCell(Text('Student')),
-        //       ],
-        //     ),
-        //     DataRow(
-        //       cells: <DataCell>[
-        //         DataCell(Text('Sarah')),
-        //         DataCell(Text('19')),
-        //         DataCell(Text('Student')),
-        //       ],
-        //     ),
-        //   ],
-        // ),
-        );
+    );
   }
 }

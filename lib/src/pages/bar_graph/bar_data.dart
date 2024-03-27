@@ -47,4 +47,4 @@ class BarData {
       IndividualBar(x: 11, y: decAmount),
     ];
   }
-}
+main

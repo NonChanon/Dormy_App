@@ -145,7 +145,7 @@ Widget buildRenterRow() {
             children: [
               CircleAvatar(
                 radius: 30,
-                backgroundImage: AssetImage('assets/image/roomTest.jpg'),
+                backgroundImage: AssetImage('assets/image/profile_test.jpg'),
               ),
             ],
           ),
@@ -195,7 +195,7 @@ Widget buildRenterDetails() {
                 width: 5,
               ),
               Text(
-                "00000555040",
+                "0649871590",
                 style: TextStyle(
                   fontSize: 12,
                 ),
@@ -206,7 +206,7 @@ Widget buildRenterDetails() {
         height: 2,
       ),
       Text(
-        "Join Dormitory since 20/2/2023",
+        "Join Dormitory since 26/3/2024",
         style: TextStyle(
           fontSize: 12,
           color: Colors.grey,
@@ -278,7 +278,7 @@ Widget buildInvoiceContainer() {
         Expanded(
           child: GestureDetector(
             onTap: () {
-              Get.to(InvoiceDetail());
+              // Get.to(InvoiceDetail());
             },
             child: Container(
               padding:
