@@ -177,3 +177,4 @@ Widget getBottomTiles(double value, TitleMeta meta) {
   }
   return SideTitleWidget(child: text, axisSide: meta.axisSide);
 }
+
