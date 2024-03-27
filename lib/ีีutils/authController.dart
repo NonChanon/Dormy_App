@@ -99,5 +99,6 @@ class AuthController extends GetxController {
       return UserRole.admin;
     else
       return UserRole.user;
+
   }
 }

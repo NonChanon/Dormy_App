@@ -1,6 +1,8 @@
+
 import 'dart:typed_data';
 import 'package:dorm_app/%E0%B8%B5%E0%B8%B5utils/authController.dart';
 import 'package:dorm_app/src/pages/qr_payment.dart';
+
 import 'package:flutter/material.dart';
 import 'package:dorm_app/src/component/invoice_body.dart';
 import 'package:get/get.dart';
@@ -211,6 +213,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
               builder: (context) => QRPayment(
                 idInvoice : widget.invoice.idInvoice,
                 amount : widget.invoice.total.toDouble(),
+
               ),
             ),
           );
