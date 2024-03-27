@@ -3,3 +3,4 @@ class IndividualBar {
   final double y;
 
   IndividualBar({required this.x, required this.y});
+}
