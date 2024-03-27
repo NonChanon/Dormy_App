@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:dorm_app/%E0%B8%B5%E0%B8%B5utils/authController.dart';
 import 'package:dorm_app/src/pages/admin/build_dormitory.dart';
 import 'package:dorm_app/src/pages/home_page.dart';
@@ -5,10 +6,12 @@ import 'package:dorm_app/src/pages/user/join_dormitory.dart';
 import 'package:dorm_app/src/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
-
+  
   @override
   State<SignIn> createState() => _SignInState();
 }
@@ -19,13 +22,99 @@ class _SignInState extends State<SignIn> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool passToggle = true;
+  late SharedPreferences prefs;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _emailController.text = 'admin';
-  //   _passwordController.text = '1234';
-  // }
+  @override
+  void initState() {
+    super.initState();
+    initSharedPref();
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
+  void login() async {
+    final reqBody = {
+      "email" : _emailController.text,
+      "password" : _passwordController.text,
+    };
+
+    final response = await http.post(Uri.parse('http://10.98.0.51:8081/Api/User/Login'),headers: {"Content-Type":"application/json"},body : jsonEncode(reqBody));
+    final jsonRes = jsonDecode(response.body);
+    if(response.statusCode >= 200 && response.statusCode < 300){
+      final token = jsonRes["token"];
+      prefs.setString("token", token);
+      _authController.serEmail(_emailController.text);
+      _authController.login();
+      bool hasDormitory = await _authController.checkIfUserHaveDormitory();
+      switch (_authController.getCurrentUserRole()) {
+        case UserRole.admin:
+          if (await _authController.checkIfUserHaveDormitory()) {
+            Get.offAll(
+                HomePage()); // นำทางไปยังหน้า HomePage สำหรับ admin ที่มีหอพัก
+          } else {
+            Get.offAll(
+                BuildDormitory()); // นำทางไปยังหน้าสร้าง Dormitory สำหรับ admin ที่ยังไม่มีหอพัก
+          }
+        case UserRole.user:
+          if (await _authController.checkIfUserHaveDormitory()) {
+            Get.offAll(
+                HomePage()); // นำทางไปยังหน้า HomePage สำหรับ user ที่มีหอพัก
+          } else {
+            Get.offAll(
+                JoinDormitory()); // นำทางไปยังหน้า JoinDormitory สำหรับ user ที่ยังไม่มีหอพัก
+          }
+          break;
+      } // เมื่อลงชื่อเข้าใช้สำเร็จให้นำทางไปยังหน้าหลัก
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Register Failed'),
+            content: Text(jsonRes['message']),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  void _handleLogin() {
+    if (_formfield.currentState!.validate()) {
+      login();
+      // print('success');
+      // _authController.login(); // เรียกใช้เมธอด login จาก Controller เมื่อลงชื่อเข้าใช้สำเร็จ
+      // print(_authController.isLoggedIn.value);
+      // switch (_authController.getCurrentUserRole()) {
+      //   case UserRole.admin:
+      //     if (_authController.checkIfUserHaveDormitory()) {
+      //       Get.offAll(
+      //           HomePage()); // นำทางไปยังหน้า HomePage สำหรับ admin ที่มีหอพัก
+      //     } else {
+      //       Get.offAll(
+      //           BuildDormitory()); // นำทางไปยังหน้าสร้าง Dormitory สำหรับ admin ที่ยังไม่มีหอพัก
+      //     }
+      //   case UserRole.user:
+      //     if (_authController.checkIfUserHaveDormitory()) {
+      //       Get.offAll(
+      //           HomePage()); // นำทางไปยังหน้า HomePage สำหรับ user ที่มีหอพัก
+      //     } else {
+      //       Get.offAll(
+      //           JoinDormitory()); // นำทางไปยังหน้า JoinDormitory สำหรับ user ที่ยังไม่มีหอพัก
+      //     }
+      //     break;
+      // } // เมื่อลงชื่อเข้าใช้สำเร็จให้นำทางไปยังหน้าหลัก
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,34 +140,6 @@ class _SignInState extends State<SignIn> {
         ),
       ),
     );
-  }
-
-  void _handleLogin() {
-    if (_formfield.currentState!.validate()) {
-      print('success');
-      _authController
-          .login(); // เรียกใช้เมธอด login จาก Controller เมื่อลงชื่อเข้าใช้สำเร็จ
-      print(_authController.isLoggedIn.value);
-      switch (_authController.getCurrentUserRole()) {
-        case UserRole.admin:
-          if (_authController.checkIfUserHaveDormitory()) {
-            Get.offAll(
-                HomePage()); // นำทางไปยังหน้า HomePage สำหรับ user ที่มีหอพัก
-          } else {
-            Get.offAll(
-                BuildDormitory()); // นำทางไปยังหน้า JoinDormitory สำหรับ user ที่ยังไม่มีหอพัก
-          }
-        case UserRole.user:
-          if (_authController.checkIfUserHaveDormitory()) {
-            Get.offAll(
-                HomePage()); // นำทางไปยังหน้า HomePage สำหรับ user ที่มีหอพัก
-          } else {
-            Get.offAll(
-                JoinDormitory()); // นำทางไปยังหน้า JoinDormitory สำหรับ user ที่ยังไม่มีหอพัก
-          }
-          break;
-      } // เมื่อลงชื่อเข้าใช้สำเร็จให้นำทางไปยังหน้าหลัก
-    }
   }
 
   _buildTextFields() {

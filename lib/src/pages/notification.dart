@@ -1,7 +1,45 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-class NotificationPage extends StatelessWidget {
-  const NotificationPage({Key? key});
+import 'package:dorm_app/%E0%B8%B5%E0%B8%B5utils/authController.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+
+final AuthController _authController = Get.put(AuthController());
+final _notify = <NotifyData>[];
+
+class NotificationPage extends StatefulWidget {
+  const NotificationPage({Key? key}) : super(key: key);
+
+  @override
+  _NotificationPageState createState() => _NotificationPageState();
+}
+
+class _NotificationPageState extends State<NotificationPage> {
+
+
+  @override
+  void initState() {
+    super.initState();
+    fetchGetNotify();
+  }
+
+  fetchGetNotify() async {
+    final idUser = _authController.getIduser();
+    var response = await http.get(Uri.parse("http://10.98.0.51:8081/Api/Notify/GetNotify/$idUser"));
+    if (response.statusCode == 200) {
+      _notify.clear();
+      List<NotifyData> notify = [];
+      var jsonResponse = jsonDecode(response.body);
+      for (var data in jsonResponse) {
+        notify.add(NotifyData.fromJson(data));
+      }
+      setState(() {_notify.addAll(notify);});
+    } else {
+      print('Request failed with status: ${response.statusCode}.');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +70,7 @@ class NotificationAppBar extends StatelessWidget
 }
 
 class NotificationList extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,9 +79,9 @@ class NotificationList extends StatelessWidget {
       child: ListView.builder(
         physics: AlwaysScrollableScrollPhysics(),
         shrinkWrap: true,
-        itemCount: 10,
+        itemCount: _notify.length,
         itemBuilder: (context, index) {
-          return NotificationItem();
+          return NotificationItem(index : index);
         },
       ),
     );
@@ -50,7 +89,8 @@ class NotificationList extends StatelessWidget {
 }
 
 class NotificationItem extends StatelessWidget {
-  @override
+    final int index;
+    const NotificationItem({Key? key,required this.index});
   Widget build(BuildContext context) {
     return Container(
       width: double.maxFinite,
@@ -83,15 +123,20 @@ class NotificationItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Your Report",
+                Text(_notify[this.index].title,
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                Text("has been received."),
+                Expanded(
+                  child: Text(_notify[this.index].details,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis, // Add overflow handling
+                  ),
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      "12 hours ago",
+                      getTimeDifference(_notify[index].timeStamp),
                       style: TextStyle(fontSize: 12, color: Colors.grey),
                     )
                   ],
@@ -101,6 +146,61 @@ class NotificationItem extends StatelessWidget {
           ))
         ],
       ),
+    );
+  }
+}
+
+String getTimeDifference(String timeStamp) {
+  DateTime now = DateTime.now();
+  DateTime postTime = DateTime.parse(timeStamp);
+
+  Duration difference = now.difference(postTime);
+
+  if (difference.inDays > 365) {
+    int years = (difference.inDays / 365).floor();
+    return '$years years ago';
+  } else if (difference.inDays > 30) {
+    int months = (difference.inDays / 30).floor();
+    return '$months months ago';
+  } else if (difference.inDays > 0) {
+    return '${difference.inDays} days ago';
+  } else if (difference.inHours > 0) {
+    return '${difference.inHours} hours ago';
+  } else if (difference.inMinutes > 0) {
+    return '${difference.inMinutes} minutes ago';
+  } else {
+    return 'just now';
+  }
+}
+
+class NotifyData {
+  final String idNotify;
+  final String idUser;
+  final String category;
+  final String title;
+  final String details;
+  final bool status;
+  final String timeStamp;
+
+  NotifyData({
+    required this.idNotify,
+    required this.idUser,
+    required this.category,
+    required this.title,
+    required this.details,
+    required this.status,
+    required this.timeStamp,
+  });
+
+  factory NotifyData.fromJson(Map<String, dynamic> json) {
+    return NotifyData(
+      idNotify: json['idNotify'] ?? '',
+      idUser: json['idUser'] ?? '',
+      category: json['category'] ?? '',
+      title: json['title'] ?? '',
+      details: json['details'] ?? '',
+      status: json['status'] ?? false,
+      timeStamp: json['timesTamp'] ?? '',
     );
   }
 }

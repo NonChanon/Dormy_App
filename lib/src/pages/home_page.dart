@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:http/http.dart' as http;
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/%E0%B8%B5%E0%B8%B5utils/authController.dart';
 import 'package:dorm_app/src/pages/edit_profile.dart';
@@ -8,6 +11,7 @@ import 'package:dorm_app/src/pages/admin/management.dart';
 import 'package:dorm_app/src/pages/my_apartment.dart';
 import 'package:dorm_app/src/pages/notification.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
@@ -71,6 +75,19 @@ class _HomePageState extends State<HomePage> {
 
   void _handleLogOut() {
     Get.offAllNamed('/sign_in');
+  }
+
+  Future<Uint8List> fetchImageBytes() async {
+    final idUser = _authController.getIduser();
+    final response = await http.get(Uri.parse('http://10.98.0.51:8081/Api/User/getProFile/$idUser'));
+
+    if (response.statusCode == 200) {
+      return response.bodyBytes;
+    } else {
+      
+      final defaultImage = await rootBundle.load('assets/image/profile_test.jpg');
+      return defaultImage.buffer.asUint8List();
+    }
   }
 
   @override
@@ -147,53 +164,73 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
-            topRight: Radius.circular(20), bottomRight: Radius.circular(20)),
+          topRight: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
       ),
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          UserAccountsDrawerHeader(
-            decoration: BoxDecoration(
-              color: Color(0xFFFDCD34),
-            ),
-            accountName: Text(
-              "Chanon Kitbunnadaech",
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
-            ),
-            accountEmail: Text(
-              "chn@gmail.com",
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.w400),
-            ),
-            currentAccountPicture: CircleAvatar(
-              backgroundImage: AssetImage('assets/image/profile_test.jpg'),
-            ),
-          ),
-          ListTile(
-            leading: Icon(Icons.manage_accounts),
-            title: Text('Edit Profile',
-                style: TextStyle(fontWeight: FontWeight.w500)),
-            onTap: () {
-              Get.to(EditProfile());
-              // Do something when Edit Profile is tapped
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.logout),
-            title:
-                Text('Logout', style: TextStyle(fontWeight: FontWeight.w500)),
-            onTap: () {
-              _authController.isLoggedIn.value = false;
-              _handleLogOut();
-              print(_authController.isLoggedIn.value);
-              // Do something when Logout is tapped
-            },
-          ),
-        ],
+      child: FutureBuilder<Uint8List>(
+        future: fetchImageBytes(), // ระบุ id ของผู้ใช้ที่ต้องการดึงภาพโปรไฟล์
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          } else if (snapshot.hasError) {
+            return Text('Error loading image');
+          } else {
+            return ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                UserAccountsDrawerHeader(
+                  decoration: BoxDecoration(
+                    color: Color(0xFFFDCD34),
+                  ),
+                  accountName: Text(
+                    _authController.getFullName(),
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  accountEmail: Text(
+                    _authController.getEmail(),
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  currentAccountPicture: CircleAvatar(
+                    backgroundImage: MemoryImage(snapshot.data!),
+                  ),
+                ),
+                ListTile(
+                  leading: Icon(Icons.manage_accounts),
+                  title: Text(
+                    'Edit Profile',
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  onTap: () {
+                    Get.to(EditProfile());
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.logout),
+                  title: Text(
+                    'Logout',
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  onTap: () {
+                    _authController.isLoggedIn.value = false;
+                    _handleLogOut();
+                    print(_authController.isLoggedIn.value);
+                  },
+                ),
+              ],
+            );
+          }
+        },
       ),
     );
   }
+
 
   CurvedNavigationBar buildBottomNavigationBar() {
     UserRole userRole = _authController.getCurrentUserRole();

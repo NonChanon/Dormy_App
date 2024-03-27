@@ -1,13 +1,17 @@
+import 'dart:convert';
 import 'package:dorm_app/%E0%B8%B5%E0%B8%B5utils/authController.dart';
 import 'package:dorm_app/src/pages/announcement.dart';
 import 'package:dorm_app/src/pages/admin/meter.dart';
+import 'package:dorm_app/src/pages/dashboard.dart';
 import 'package:dorm_app/src/pages/report.dart';
 import 'package:dorm_app/src/pages/admin/room_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 
 class HomeBody extends StatefulWidget {
   const HomeBody({Key? key});
+  
 
   @override
   State<HomeBody> createState() => _HomeBodyState();
@@ -15,6 +19,32 @@ class HomeBody extends StatefulWidget {
 
 class _HomeBodyState extends State<HomeBody> {
   final AuthController _authController = Get.put(AuthController());
+
+  Future<PostData> fetchPostData() async {
+    final id = _authController.getIduser();
+    final UserRole userRole = _authController.getCurrentUserRole();
+    print("ID : " + id);
+    if(userRole == UserRole.admin)
+    {
+      String jsonString = '{"dormitoryName": "AP HOUSE", "idRoom": "", "roomName": 0}';
+      Map<String, dynamic> jsonMap = json.decode(jsonString); // แปลง JSON string เป็น Map
+      PostData postData = PostData.fromJson(jsonMap); // สร้างอ็อบเจกต์ PostData จาก Map
+      return postData;
+      
+    }
+    else
+    {
+      final response = await http.get(Uri.parse("http://10.98.0.51:8081/Api/Dormitory/GetNameDormitory/$id"));
+      if (response.statusCode == 200) {
+        // ถ้าสำเร็จ ส่งค่ากลับในรูปแบบของ PostData
+        return PostData.fromJson(json.decode(response.body));
+      } else {
+        // ถ้าเกิดข้อผิดพลาด ส่งค่าเป็น null
+        throw Exception('Failed to load post data');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final UserRole userRole = _authController.getCurrentUserRole();
@@ -22,10 +52,16 @@ class _HomeBodyState extends State<HomeBody> {
       children: [
         Container(
           height: 320,
-          child: PageView.builder(
-            itemCount: 1,
-            itemBuilder: (context, position) {
-              return _buildPageItem(position);
+          child: FutureBuilder<Widget>(
+            future: _buildPageItem(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else {
+                return snapshot.data ?? SizedBox(); // ในกรณีที่ไม่มีข้อมูลให้ใช้ SizedBox() แทน
+              }
             },
           ),
         ),
@@ -63,7 +99,7 @@ class _HomeBodyState extends State<HomeBody> {
                 _buildMenu(Icons.electric_meter, "Meter", Meter()),
               if (userRole == UserRole.admin) // ถ้า userRole เป็น 'admin'
                 SizedBox(width: 20), // ใส่ SizedBox ใน if condition
-              _buildMenu(Icons.analytics, "Dashboard", RoomDetailPage()),
+              _buildMenu(Icons.analytics, "Dashboard", Dashboard()),
             ],
           ),
         )
@@ -71,7 +107,10 @@ class _HomeBodyState extends State<HomeBody> {
     );
   }
 
-  Widget _buildPageItem(int index) {
+  Future<Widget> _buildPageItem() async {
+    final postData = await fetchPostData();
+    _authController.setRoomName(postData.roomName.toString());
+    _authController.setIdRoom(postData.idRoom);
     return Stack(
       children: [
         Container(
@@ -107,7 +146,7 @@ class _HomeBodyState extends State<HomeBody> {
                         width: 10,
                       ),
                       Text(
-                        'Happy Apartment',
+                        postData.dormitoryName,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -116,7 +155,7 @@ class _HomeBodyState extends State<HomeBody> {
                     ],
                   ),
                   Text(
-                    'Room A101',
+                    "Room " + postData.roomName.toString(),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -152,6 +191,25 @@ class _HomeBodyState extends State<HomeBody> {
           Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
+    );
+  }
+}
+class PostData {
+  final String dormitoryName;
+  final String idRoom;
+  final int roomName;
+
+  PostData({
+    required this.dormitoryName,
+    required this.idRoom,
+    required this.roomName,
+  });
+
+  factory PostData.fromJson(Map<String, dynamic> json) {
+    return PostData(
+      dormitoryName: json['dormitoryName'] ?? '',
+      idRoom: json['idRoom'] ?? '',
+      roomName: json['roomName'] ?? 0,
     );
   }
 }
