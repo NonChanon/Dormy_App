@@ -91,10 +91,10 @@ class _HomeBodyState extends State<HomeBody> {
               SizedBox(
                 width: 20,
               ),
+              if (userRole == UserRole.user)
               _buildMenu(Icons.announcement, "Report", ReportPage()),
-              SizedBox(
-                width: 20,
-              ),
+              if (userRole == UserRole.user)
+              SizedBox(width: 20),
               if (userRole == UserRole.admin) // ถ้า userRole เป็น 'admin'
                 _buildMenu(Icons.electric_meter, "Meter", Meter()),
               if (userRole == UserRole.admin) // ถ้า userRole เป็น 'admin'
