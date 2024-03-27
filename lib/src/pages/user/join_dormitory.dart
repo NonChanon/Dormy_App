@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:dorm_app/%E0%B8%B5%E0%B8%B5utils/authController.dart';
+import 'package:dorm_app/utils/authController.dart';
 import 'package:dorm_app/src/pages/home_page.dart';
 import 'package:dorm_app/src/routes.dart';
 import 'package:flutter/material.dart';
